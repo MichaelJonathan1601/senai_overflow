@@ -16,16 +16,20 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "perguntas",
+          model: "questions",
           key: "id"
-        }
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       },
       student_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: "alunos",
+          model: "students",
           key: "id"
-        }
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       },
       created_at: {
         type: Sequelize.DATE,

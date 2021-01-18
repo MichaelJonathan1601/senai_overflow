@@ -7,25 +7,25 @@ module.exports = {
     },
 
     async store(req, res) {
-        const { titulo, descricao, imagem, gist, categorias} = req.body
+        const { title, description, image, gist, categories} = req.body
 
-        const alunoId = req.headers.authorization;
+        const studentId = req.headers.authorization;
         
         try {
              //buscar o aluno pelo ID
-              let aluno = await Student.findByPk(alunoId);
+              let student = await Student.findByPk(studentId);
 
-             //Se aluno não existir, retorna erro
-              if(!aluno)
+             //Se aluno não existir, retorna erro   
+              if(!student)
                 return res.status(404).send({ erro: "Aluno não encontrado"});
 
              //crio a pergunta para o aluno
-              let pergunta = await aluno.createQuestion({ titulo, descricao, imagem, gist});
+              let question = await student.createQuestion({ title, description, image, gist});
 
-             await pergunta.addCategories(categorias);
+             await question.addCategories(categories);
 
              //retorno sucesso
-              res.status(201).send(pergunta);      
+              res.status(201).send(question);      
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
@@ -40,17 +40,17 @@ module.exports = {
     },
 
     async update(req, res) {
-        const { titulo, descricao } = req.body
+        const { title, description } = req.body
 
         const studentId = req.headers.authorization;
         const questionId = req.params.id;
 
         try {
              //buscar o aluno pelo ID
-             let aluno = await Student.findByPk(studentId);
+             let student = await Student.findByPk(studentId);
 
               //Se aluno não existir, retorna erro
-              if(!aluno)
+              if(!student)
                 return res.status(404).send({ erro: "Aluno não encontrado"});
 
             //buscar a pergunta pelo ID
@@ -60,12 +60,12 @@ module.exports = {
               if(!question)
               return res.status(404).send({ erro: "Pergunta não encontrada"});
 
-              if(question.aluno_id.toString() !== studentId)
+              if(question.StudentId.toString() !== studentId)
                 res.status(401).send({erro: "Não autorizado"})  
 
              
-            question.titulo = titulo;
-            question.descricao = descricao;
+            question.title = title;
+            question.description = description;
 
             question.save();
 
@@ -88,8 +88,8 @@ module.exports = {
             const question = await Question.findOne({ 
                 where: 
                 { 
-                    aluno_id: studentId, 
-                    id: questionId 
+                    id: questionId, 
+                    student_id: studentId
                 } 
             });
 

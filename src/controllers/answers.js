@@ -6,15 +6,15 @@ module.exports = {
     async store(req, res) {
         const { description } = req.body
 
-        const alunoId = req.headers.authorization;
+        const studentId = req.headers.authorization;
         const questionId = req.params.id;
         
         try {
              //buscar o aluno pelo ID
-              let aluno = await Student.findByPk(alunoId);
+              let student = await Student.findByPk(studentId);
 
              //Se aluno não existir, retorna erro
-              if(!aluno)
+              if(!student)
                 return res.status(404).send({ erro: "Aluno não encontrado"});
 
             //buscar a pergunta pelo ID
@@ -25,11 +25,11 @@ module.exports = {
               return res.status(404).send({ erro: "Pergunta não encontrada"});
 
             //crio a resposta para a pergunta com o aluno do authorization
-             const resposta = await question.createAnswer({  description, student_id: alunoId  });
+             const answer = await question.createAnswer({  description, student_id: studentId  });
 
         
              //retorno sucesso
-              res.status(201).send(resposta);      
+              res.status(201).send(answer);      
         } catch (error) {
             console.log(error);
             res.status(500).send(error);

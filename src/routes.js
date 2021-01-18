@@ -1,34 +1,36 @@
 //importa o express
 const express = require("express");
 
-const alunoController = require ("./controllers/alunos");
-const perguntaController = require ("./controllers/perguntas");
-const respostaController = require ("./controllers/respostas");
+const studentController = require ("./controllers/students");
+const questionController = require ("./controllers/questions");
+const answerController = require ("./controllers/answers");
+const feedController = require ("./controllers/feed");
 
 const routes = express.Router();
 
 //rotas de alunos
-routes.get("/alunos", alunoController.listarAlunos);
+routes.get("/students", studentController.index);
 
-routes.post("/alunos", alunoController.adicionarAlunos);
+routes.post("/students", studentController.store);
 
-routes.delete("/alunos/:id", alunoController.deletarAlunos);
+routes.delete("/students/:id", studentController.delete);
 
-routes.put("/alunos/:id", alunoController.editarAlunos);
+routes.put("/students/:id", studentController.update);
 
-routes.get("/alunos/:id", alunoController.buscarAlunos);
+routes.get("/students/:id", studentController.find);
 
 //rotas de perguntas
+routes.post("/questions", questionController.store);
 
-routes.post("/perguntas", perguntaController.store);
+routes.put("/questions/:id", questionController.update);
 
-routes.put("/perguntas/:id", perguntaController.update);
-
-routes.delete("/perguntas/:id", perguntaController.delete);
+routes.delete("/questions/:id", questionController.delete);
 
 //rotas de respostas
+routes.post("/questions/:id/answers", answerController.store);
 
-routes.post("/perguntas/:id/respostas", respostaController.store);
+//rotas do feed
+routes.get("/feed", feedController.index);
 
 
 module.exports = routes;

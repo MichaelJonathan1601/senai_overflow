@@ -2,7 +2,7 @@ const Student = require("../models/Student");
 
 module.exports = {
     //função que vai ser executada pela rota
-    async listarAlunos(req, res){
+    async index(req, res){
 
         try {
             const students = await Student.findAll();
@@ -10,14 +10,14 @@ module.exports = {
             res.send(students);
 
         } catch (error) {
-            console.log(students);
+            console.log(error);
             res.status(500).send({ error })
         }
 
         
     },
 
-    async buscarAlunos(req, res) {
+    async find(req, res) {
         //recuperar o id do Student
         const studentId = req.params.id;
     
@@ -27,7 +27,7 @@ module.exports = {
         try {
 
             let student = await Student.findByPk(studentId, {
-                attributes: ["id", "nome", "ra", "email"]
+                attributes: ["id", "name", "ra", "email"]
             });
             
 
@@ -50,9 +50,9 @@ module.exports = {
     
     },
     
-    async adicionarAlunos(req, res){
+    async store(req, res){
         //receber os dados do body
-        const { ra, nome, email, senha } = req.body;
+        const { ra, name, email, password } = req.body;
     
         
         try {
@@ -66,9 +66,9 @@ module.exports = {
             if(student)
                 return res.status(400).send({ erro: "Aluno já cadastrado" });
 
-             student = await Student.create({ra, nome, email, senha});
+             student = await Student.create({ra, name, email, password});
 
-            res.status(201).send({ id: student.id });
+            res.status(201).send(student);
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
@@ -86,7 +86,7 @@ module.exports = {
        
     },
     
-    async deletarAlunos(req, res){
+    async delete(req, res){
         //recuperar o id do Student
         const studentId = req.params.id
     
@@ -111,12 +111,12 @@ module.exports = {
        
     },
     
-    async editarAlunos(req, res) {
+    async update(req, res) {
         //recuperar o id do Student
         const studentId = req.params.id;
     
         //recuperar o dados do corpo 
-        const { nome, email } = req.body;
+        const { name, email } = req.body;
     
         //fazer a alteração
         //Students = Students.map(
@@ -130,10 +130,10 @@ module.exports = {
             if(!student)
                 res.status(404).send({error: "Aluno não encontrado"});
 
-            Student.nome = nome;
-            Student.email = email;
+            student.name = name;
+            student.email = email;
 
-            Student.save();
+            student.save();
 
             //retornar resposta
             res.status(204).send();

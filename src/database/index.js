@@ -7,24 +7,24 @@ const Student = require("../models/Student");
 const Category = require("../models/Category");
 const Answer = require("../models/Answer");
 
-const conexao = new Sequelize(dbConfig);
+const connection = new Sequelize(dbConfig);
 
 //Inicializa as models
-Student.init(conexao);
-Question.init(conexao);
-Category.init(conexao);
-Answer.init(conexao);
+Student.init(connection);
+Question.init(connection);
+Category.init(connection);
+Answer.init(connection);
 
 
 
 //Inicializa os relacionamentos
-Student.associate(conexao.models);
-Question.associate(conexao.models);
-Category.associate(conexao.models);
-Answer.associate(conexao.models);
+Student.associate(connection.models);
+Question.associate(connection.models);
+Category.associate(connection.models);
+Answer.associate(connection.models);
 
-for (let assoc of Object.keys(Student.associations)) {
-    for (let accessor of Object.keys(Student.associations[assoc].accessors)) {
-        console.log(Student.name + '.' + Student.associations[assoc].accessors[accessor] + '()');
-    }
-}
+//for (let assoc of Object.keys(Student.associations)) {
+    //for (let accessor of Object.keys(Student.associations[assoc].accessors)) {
+        //console.log(Student.name + '.' + Student.associations[assoc].accessors[accessor] + '()');
+    //}
+//}
