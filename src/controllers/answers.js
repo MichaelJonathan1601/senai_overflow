@@ -2,42 +2,50 @@ const Question = require("../models/Question");
 const Student = require("../models/Student");
 
 module.exports = {
+  index(req, res) {
 
-    async store(req, res) {
-        const { description } = req.body
+  },
 
-        const studentId = req.headers.authorization;
-        const questionId = req.params.id;
-        
-        try {
-             //buscar o aluno pelo ID
-              let student = await Student.findByPk(studentId);
+  //função que adiciona uma respota a uma pergunta
+  async store(req, res) {
+    const questionId = req.params.id;
 
-             //Se aluno não existir, retorna erro
-              if(!student)
-                return res.status(404).send({ erro: "Aluno não encontrado"});
+    const { studentId } = req;
 
-            //buscar a pergunta pelo ID
-            let question = await Question.findByPk(questionId);
+    const { description } = req.body;
 
-              //Se pergunta não existir, retorna erro
-              if(!question)
-              return res.status(404).send({ erro: "Pergunta não encontrada"});
+    try {
 
-            //crio a resposta para a pergunta com o aluno do authorization
-             const answer = await question.createAnswer({  description, student_id: studentId  });
+      //verifica se a questão existe
+      const question = await Question.findByPk(questionId);
 
-        
-             //retorno sucesso
-              res.status(201).send(answer);      
-        } catch (error) {
-            console.log(error);
-            res.status(500).send(error);
-        }
+      //se não existir retorna erro 404
+      if (!question)
+        return res.status(404).send({ error: "Pergunta não encontrada" });
 
-       
-        
-    },
-    
+      //cria a resposta para a pergunta com o aluno do token
+      const answer = await question.createAnswer({ description, student_id: studentId });
+
+      //responde com status de sucesso
+      res.status(201).send(answer);
+
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
+    }
+
+  },
+
+  find(req, res) {
+
+  },
+
+  async update(req, res) {
+
+  },
+
+  async delete(req, res) {
+
+  }
 
 }

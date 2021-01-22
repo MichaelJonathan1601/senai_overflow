@@ -1,103 +1,99 @@
 const Student = require("../models/Student");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const auth = require("../config/auth.json");
 
 module.exports = {
     //função que vai ser executada pela rota
-    async index(req, res){
+    async index(req, res) {
 
         try {
-            const students = await Student.findAll();
+            const student = await Student.findAll();
 
-            res.send(students);
+            res.send(student);
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ error })
+        }
+
+    },
+
+    async find(req, res) {
+        //recuperar o id do aluno
+        const studentId = req.params.id;
+
+        try {
+            let student = await Student.findByPk(studentId, {
+                attributes: ["id", "ra", "name", "email"]
+            });
+
+            //se aluno não encontrado, retornar not found
+            if (!student)
+                return res.status(404).send({ erro: "Aluno não encontrado" });
+
+            res.send(student);
 
         } catch (error) {
             console.log(error);
             res.status(500).send({ error })
         }
 
-        
     },
 
-    async find(req, res) {
-        //recuperar o id do Student
-        const studentId = req.params.id;
-    
-        //buscar o Student pelo id
-        //const Student = Students.find(a => a.id.toString() === StudentId);
-
-        try {
-
-            let student = await Student.findByPk(studentId, {
-                attributes: ["id", "name", "ra", "email"]
-            });
-            
-
-             //se Student encontrado, retornar Student
-             delete student.senha;
-
-             res.send(student);
-
-             //se Student não encontrado, retornar not found
-            if (!student)
-            return res.status(404).send({ erro: "Aluno não encontrado" });
-
-           
-        } catch (error) {
-            console.log(error);
-            res.status(500).send(error);
-        }
-    
-       
-    
-    },
-    
-    async store(req, res){
+    async store(req, res) {
         //receber os dados do body
         const { ra, name, email, password } = req.body;
-    
-        
+
         try {
-            //SELECT * FROM Students WHERE ra = ?
+
+            //SELECT * FROM alunos WHERE ra = ? AND email = ?
             let student = await Student.findOne({
                 where: {
-                    ra
+                    ra: ra,
                 }
-            })
+            });
 
-            if(student)
-                return res.status(400).send({ erro: "Aluno já cadastrado" });
+            if (student)
+                return res.status(400).send({ error: "Aluno já cadastrado" });
 
-             student = await Student.create({ra, name, email, password});
+            const passwordCript = bcrypt.hashSync(password);
 
-            res.status(201).send(student);
+            student = await Student.create({
+                ra,
+                name,
+                email,
+                password: passwordCript
+            });
+
+            const token = jwt.sign({ studentId: student.id, studentName: student.name }, auth.secret);
+
+            //retornar resposta de sucesso
+            res.status(201).send({
+                student: {
+                    studentId: student.id,
+                    name: student.name,
+                    ra: student.ra,
+                    email: student.email
+                },
+                token
+            });
+            
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
         }
-       
-        
-        
-        //incrementar o último id
-        //const nextId = Students.length > 0 ? Students[Students.length - 1].id + 1 : 1;
-    
-        //adicionar o Student na lista
-        //Students.push({ id: nextId, ra, nome, email, senha });
-    
-        //retornar resposta de sucesso
-       
+
     },
-    
-    async delete(req, res){
-        //recuperar o id do Student
+
+    async delete(req, res) {
+        //recuperar o id do aluno
         const studentId = req.params.id
-    
-        //retirar esse Student da lista
-        //Students = Students.filter(a => a.id.toString() !== StudentId);
 
         try {
             let student = await Student.findByPk(studentId);
 
-            if(!student)
-                return res.status(404).send({erro : "Aluno nao encontrado"});
+            if (!student)
+                return res.status(404).send({ error: "Aluno não encontrado" });
 
             await student.destroy();
 
@@ -107,28 +103,22 @@ module.exports = {
             console.log(error);
             res.status(500).send(error);
         }
-    
-       
+
     },
-    
+
     async update(req, res) {
-        //recuperar o id do Student
+        //recuperar o id do aluno
         const studentId = req.params.id;
-    
+
         //recuperar o dados do corpo 
         const { name, email } = req.body;
-    
-        //fazer a alteração
-        //Students = Students.map(
-            //a => a.id.toString() === StudentId ? { ...a, nome, email } : a
-        //);
 
         try {
 
             let student = await Student.findByPk(studentId);
-            
-            if(!student)
-                res.status(404).send({error: "Aluno não encontrado"});
+
+            if (!student)
+                res.status(404).send({ error: "Aluno não encontrado" });
 
             student.name = name;
             student.email = email;
@@ -141,7 +131,6 @@ module.exports = {
             console.log(error);
             res.status(500).send(error);
         }
-    
-        
     }
+
 }

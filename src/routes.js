@@ -1,36 +1,52 @@
-//importa o express
 const express = require("express");
 
-const studentController = require ("./controllers/students");
-const questionController = require ("./controllers/questions");
-const answerController = require ("./controllers/answers");
-const feedController = require ("./controllers/feed");
+const authMiddleware = require("./middleware/authorization");
+const uploadQuestions = require("./middleware/uploadQuestions");
+
+const studentController = require("./controllers/students");
+const questionController = require("./controllers/questions");
+const answerController = require("./controllers/answers");
+const feedController = require("./controllers/feed");
+const sessionController = require("./controllers/sessions");
+
+const studentValidators = require("./validators/students");
+const questionValidators = require("./validators/questions");
+const answerValidators = require("./validators/answers");
 
 const routes = express.Router();
 
+//rotas públicas
+routes.post("/sessions", sessionController.store);
+routes.post("/students", studentValidators.create, studentController.store);
+
+routes.use(authMiddleware);
+
+//rotas privadas
+
 //rotas de alunos
 routes.get("/students", studentController.index);
-
-routes.post("/students", studentController.store);
-
+routes.get("/students/:id", studentController.find);
 routes.delete("/students/:id", studentController.delete);
-
 routes.put("/students/:id", studentController.update);
 
-routes.get("/students/:id", studentController.find);
-
 //rotas de perguntas
-routes.post("/questions", questionController.store);
-
+routes.post(
+  "/questions",
+  uploadQuestions,
+  questionValidators.create,
+  questionController.store
+);
+routes.delete("/questions/:id", questionController.delete);
 routes.put("/questions/:id", questionController.update);
 
-routes.delete("/questions/:id", questionController.delete);
-
 //rotas de respostas
-routes.post("/questions/:id/answers", answerController.store);
+routes.post(
+  "/questions/:id/answers",
+  answerValidators.create,
+  answerController.store
+);
 
 //rotas do feed
 routes.get("/feed", feedController.index);
-
 
 module.exports = routes;

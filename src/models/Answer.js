@@ -1,24 +1,21 @@
 const { Model, DataTypes } = require("sequelize");
 
 class Answer extends Model {
-    //Aqui configuramos os campos da tabela
-    //Os campos automáticos não precisam ser declarados
-    static init(sequelize){
+    static init(sequelize) {
         super.init(
             {
-                description: DataTypes.TEXT,
+                description: DataTypes.STRING,
                 student_id: DataTypes.INTEGER
-               
             },
             {
                 sequelize,
             }
         )
     }
-    //aqui configuramos os relacionamentos
-    static associate(models){
-        this.belongsTo(models.Student);
+
+    static associate(models) {
         this.belongsTo(models.Question);
+        this.belongsTo(models.Student);
     }
 }
 

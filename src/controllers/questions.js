@@ -7,32 +7,41 @@ module.exports = {
     },
 
     async store(req, res) {
-        const { title, description, image, gist, categories} = req.body
+        const { title, description, image, gist, categories } = req.body;
 
-        const studentId = req.headers.authorization;
-        
+        const categoriesArr = categories.split(",");
+
+        const { studentId } = req;
+
         try {
-             //buscar o aluno pelo ID
-              let student = await Student.findByPk(studentId);
+            //buscar o aluno pelo ID
+            let student = await Student.findByPk(studentId);
 
-             //Se aluno não existir, retorna erro   
-              if(!student)
-                return res.status(404).send({ erro: "Aluno não encontrado"});
+            //se aluno não existir, retorna erro
+            if (!student)
+                return res.status(404).send({ error: "Aluno não encontrado" });
 
-             //crio a pergunta para o aluno
-              let question = await student.createQuestion({ title, description, image, gist});
+            //crio a pergunta para o aluno
+            let question = await student.createQuestion({ title, description, image, gist });
 
-             await question.addCategories(categories);
+            await question.addCategories(categoriesArr);
 
-             //retorno sucesso
-              res.status(201).send(question);      
+            //retorno sucesso
+            res.status(201).send({
+                id: question.id,
+                title: question.title,
+                description: question.description,
+                created_at: question.created_at,
+                gist: question.gist,
+                image: `http://localhost:3333/${req.file.path}`,
+            });
+
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
         }
 
-       
-        
+
     },
 
     find(req, res) {
@@ -40,38 +49,27 @@ module.exports = {
     },
 
     async update(req, res) {
-        const { title, description } = req.body
-
-        const studentId = req.headers.authorization;
         const questionId = req.params.id;
 
+        const { title, description } = req.body;
+
+        const { studentId } = req;
+
         try {
-             //buscar o aluno pelo ID
-             let student = await Student.findByPk(studentId);
+            const question = await Question.findByPk(questionId);
 
-              //Se aluno não existir, retorna erro
-              if(!student)
-                return res.status(404).send({ erro: "Aluno não encontrado"});
+            if (!question)
+                return res.status(404).send({ error: "Questão não encontrada" });
 
-            //buscar a pergunta pelo ID
-            let question = await Question.findByPk(questionId);
+            if (question.student_id != studentId)
+                return res.status(401).send({ error: "Não autorizado" })
 
-              //Se pergunta não existir, retorna erro
-              if(!question)
-              return res.status(404).send({ erro: "Pergunta não encontrada"});
-
-              if(question.StudentId.toString() !== studentId)
-                res.status(401).send({erro: "Não autorizado"})  
-
-             
             question.title = title;
             question.description = description;
 
             question.save();
 
-             //retorno sucesso
-              res.status(201).send(question);   
-
+            res.status(204).send();
 
         } catch (error) {
             console.log(error);
@@ -80,21 +78,20 @@ module.exports = {
     },
 
     async delete(req, res) {
-        const questionId  = req.params.id;
+        const questionId = req.params.id;
 
-        const studentId = req.headers.authorization;
+        const { studentId } = req;
 
         try {
-            const question = await Question.findOne({ 
-                where: 
-                { 
-                    id: questionId, 
+            const question = await Question.findOne({
+                where: {
+                    id: questionId,
                     student_id: studentId
-                } 
+                }
             });
 
-            if(!question)
-                res.status(404).send({ erro: "Questão não foi encontrada" });
+            if (!question)
+                res.status(404).send({ error: "Questão não encontrada" });
 
             await question.destroy();
 
@@ -105,4 +102,5 @@ module.exports = {
             res.status(500).send(error);
         }
     }
+
 }

@@ -6,7 +6,7 @@ module.exports = {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
       },
       description: {
         type: Sequelize.TEXT,
@@ -19,17 +19,14 @@ module.exports = {
           model: "questions",
           key: "id"
         },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
       },
       student_id: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: "students",
           key: "id"
         },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
       },
       created_at: {
         type: Sequelize.DATE,
