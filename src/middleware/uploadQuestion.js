@@ -1,26 +1,19 @@
 const Multer = require("multer");
 
-const uploadQuestions = Multer({
-    storage: Multer.diskStorage({
-        destination: 'uploads/',
-        filename: (req, file, callback) => {
-            const filename = Date.now() + "." + file.originalname.split(".").pop();
+const uploadQuestion = Multer({
+  storage: Multer.memoryStorage(),
+  fileFilter: (req, file, callback) => {
+    let allowedTypes = ["image/png", "image/jpeg"];
 
-            return callback(null, filename);
-        }
-    }),
-    fileFilter: (req, file, callback) => {
-        let allowedTypes = ["image/png", "image/jpeg"];
-
-        if(allowedTypes.includes(file.mimetype)) {
-            callback(null, true);
-        } else{
-            callback(new Error("Tipo do arquivo inválido"));
-        }
-    },
-    limits: {
-        fileSize: 1024 * 1024 * 2, //máximo de 2Mb
-    },
+    if (allowedTypes.includes(file.mimetype)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Tipo do arquivo inválido"));
+    }
+  },
+  limits: {
+    fileSize: 1024 * 1024 * 2, //máximo de 2Mb
+  },
 });
 
-module.exports = uploadQuestions.single("image");
+module.exports = uploadQuestion.single("image");

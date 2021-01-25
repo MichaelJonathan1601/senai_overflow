@@ -1,7 +1,7 @@
 const express = require("express");
 
 const authMiddleware = require("./middleware/authorization");
-const uploadQuestions = require("./middleware/uploadQuestions");
+const uploadQuestion = require("./middleware/uploadQuestion");
 
 const studentController = require("./controllers/students");
 const questionController = require("./controllers/questions");
@@ -12,6 +12,7 @@ const sessionController = require("./controllers/sessions");
 const studentValidators = require("./validators/students");
 const questionValidators = require("./validators/questions");
 const answerValidators = require("./validators/answers");
+const uploadFirebase = require("./services/uploadFirebase");
 
 const routes = express.Router();
 
@@ -32,7 +33,8 @@ routes.put("/students/:id", studentController.update);
 //rotas de perguntas
 routes.post(
   "/questions",
-  uploadQuestions,
+  uploadQuestion,
+  uploadFirebase,
   questionValidators.create,
   questionController.store
 );
