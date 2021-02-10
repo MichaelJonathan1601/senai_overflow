@@ -1,6 +1,6 @@
 const Multer = require("multer");
 
-const uploadQuestion = Multer({
+const uploadSingleImage = Multer({
   storage: Multer.memoryStorage(),
   fileFilter: (req, file, callback) => {
     let allowedTypes = ["image/png", "image/jpeg"];
@@ -16,4 +16,4 @@ const uploadQuestion = Multer({
   },
 });
 
-module.exports = uploadQuestion.single("image");
+module.exports = uploadSingleImage.single("image");
