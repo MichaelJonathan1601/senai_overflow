@@ -12,6 +12,7 @@ module.exports = {
           "image",
           "gist",
           "created_at",
+          "StudentId",
         ],
         include: [
           {

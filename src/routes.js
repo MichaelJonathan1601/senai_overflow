@@ -10,6 +10,7 @@ const answerController = require("./controllers/answers");
 const feedController = require("./controllers/feed");
 const sessionController = require("./controllers/sessions");
 const categoriesController = require("./controllers/categories");
+const searchController = require("./controllers/search");
 
 const studentValidators = require("./validators/students");
 const questionValidators = require("./validators/questions");
@@ -58,6 +59,9 @@ routes.post(
 
 //rotas do feed
 routes.get("/feed", feedController.index);
+
+//rota de search
+routes.get("/search/:description", searchController.index);
 
 //rotas de categorias
 routes.get("/categories", categoriesController.index);
