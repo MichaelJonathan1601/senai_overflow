@@ -13,11 +13,9 @@ module.exports = (req, res, next) => {
   const [Bearer, token] = authorization.split(" ");
 
   //verifica se o token está presente, se não retorna erro
-  if (!token)
-    return res.status(401).send({ error: "Token mal formatado" });
+  if (!token) return res.status(401).send({ error: "Token mal formatado" });
 
   try {
-
     //verifica se o token é válido, se não cai no catch
     const payload = jwt.verify(token, auth.secret);
 
@@ -26,9 +24,8 @@ module.exports = (req, res, next) => {
 
     //envia a requisição para frente (controller)
     return next();
-
   } catch (error) {
     //retorna erro de token inválido
     res.status(401).send({ error: "Token inválido" });
   }
-}
+};

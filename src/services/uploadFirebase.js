@@ -1,9 +1,10 @@
-var admin = require("firebase-admin");
+const { errors } = require("celebrate");
+const admin = require("firebase-admin");
 
-var serviceAccount = require("../config/firebase-key.json");
+const serviceAccount = require("../config/firebase-key.json");
 
-//alterar para o seu firebase
-const BUCKET = "senai-overflow-cb4eb.appspot.com";
+//alterar para o seu bucket
+const BUCKET = "senai-overflow-2021-01.appspot.com";
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -16,6 +17,7 @@ const uploadFirebase = (req, res, next) => {
   if (!req.file) return next();
 
   const image = req.file;
+
   const fileName = Date.now() + "." + image.originalname.split(".").pop();
 
   const file = bucket.file(fileName);
@@ -23,9 +25,6 @@ const uploadFirebase = (req, res, next) => {
   const stream = file.createWriteStream({
     metadata: {
       contentType: image.mimeType,
-    },
-    limits: {
-      fileSize: 1040 * 1024 * 4,
     },
   });
 

@@ -1,4 +1,5 @@
 const Student = require("../models/Student");
+const { store } = require("./sessions");
 
 module.exports = {
   async store(req, res) {
@@ -12,13 +13,13 @@ module.exports = {
     try {
       const student = await Student.findByPk(studentId);
 
-      student.profile_image = firebaseUrl;
+      student.image = firebaseUrl;
 
       student.save();
 
       res.status(201).send({
         studentId,
-        profile_image: firebaseUrl,
+        image: firebaseUrl,
       });
     } catch (error) {
       res.status(500).send(error);

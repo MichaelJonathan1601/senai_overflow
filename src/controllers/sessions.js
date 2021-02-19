@@ -1,5 +1,7 @@
 const Student = require("../models/Student");
 const bcrypt = require("bcryptjs");
+const auth = require("../config/auth.json");
+const jwt = require("jsonwebtoken");
 const { generateToken } = require("../utils");
 
 module.exports = {
@@ -28,11 +30,11 @@ module.exports = {
             name: student.name,
             ra: student.ra,
             email: student.email,
-            profile_image: student.profile_image,
+            image: student.image,
           },
           token,
         });
-      }, 1000);
+      }, 3000);
     } catch (error) {
       console.log(error);
       res.status(500).send(error);

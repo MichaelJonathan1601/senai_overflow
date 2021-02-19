@@ -12,7 +12,7 @@ class Student extends Model {
         name: DataTypes.STRING,
         email: DataTypes.STRING,
         password: DataTypes.STRING,
-        profile_image: DataTypes.STRING,
+        image: DataTypes.STRING,
       },
       {
         sequelize,
